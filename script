@@ -1,12 +1,13 @@
 import re
+import sys
 import fileinput
 
 def check_for_pattern(line):
 	pattern = re.compile()
 	return pattern.match(line)
 	
-
-for line in fileinput.input("forum.php", inplace = 1):
+filename = sys.argv[1]
+for line in fileinput.input(filename, inplace = 1):
 	pattern_one = re.compile("\$(_get|_post|_request)\[.*?\]", re.IGNORECASE)
 	pattern_e = re.compile("\w*?(mysqli*_query|\$[^=]*?->query)\w*?", re.IGNORECASE)
 	pattern_square_brackets = re.compile("\$(_GET|_POST|_REQUEST)\[.*?\]", re.IGNORECASE)
