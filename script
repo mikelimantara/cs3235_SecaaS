@@ -6,11 +6,11 @@ def check_for_pattern(line):
 	return pattern.match(line)
 	
 
-for line in fileinput.input("text.txt", inplace = 1):
+for line in fileinput.input("forum.php", inplace = 1):
 	pattern_one = re.compile("\$(_get|_post|_request)\[.*?\]", re.IGNORECASE)
 	pattern_e = re.compile("\w*?(mysqli*_query|\$[^=]*?->query)\w*?", re.IGNORECASE)
 	pattern_square_brackets = re.compile("\$(_GET|_POST|_REQUEST)\[.*?\]", re.IGNORECASE)
-	pattern_in_brackets = re.compile(r'\((?P<abc>.*?)\)')
+	pattern_in_brackets = re.compile(r'\((?P<abc>.*?)\n')
 	pattern_two = re.compile(r'\"(?P<abc>.*?)\"')
 	
 	if (pattern_one.search(line)):
@@ -20,7 +20,7 @@ for line in fileinput.input("text.txt", inplace = 1):
 	elif (pattern_e.search(line)):
 		q = re.findall(pattern_two, line)
 		r = re.sub(pattern_e, 'executePreparedStatement', line.rstrip('\n'))
-		print(re.sub(pattern_in_brackets, '("'+ q[0] + '")', r))
+		print(re.sub(pattern_in_brackets, '("'+ q[0] + '");', r))
 	else:
 		print (line.rstrip('\n'))
 
