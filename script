@@ -1,39 +1,31 @@
-import tempfile
-import sys
 import re
-
-
-
-def process_and_print(line):
-	if (check_for_pattern(line)):
-		line = "TESTING" + line
-
-	write_to_temp_file("HAHA" + line)
+import fileinput
 
 def check_for_pattern(line):
-	pattern = re.compile("\$(GET|POST|REQUEST)\[.*\]/i")
+	pattern = re.compile()
 	return pattern.match(line)
+	
 
-def write_to_temp_file(line):
-	global t
-	t.write(line.rstrip()+"\n")
+for line in fileinput.input("text.txt", inplace = 1):
+	pattern_one = re.compile("\$(get|post|request)\[.*?\]", re.IGNORECASE)
+	pattern_e = re.compile("\w*?(mysqli*_query|\$[^=]*?->query)\w*?", re.IGNORECASE)
+	pattern_square_brackets = re.compile("\$[^=]*?\[.*?\]")
+	pattern_in_brackets = re.compile(r'\((?P<abc>.*?)\)')
+	pattern_two = re.compile(r'\"(?P<abc>.*?)\"')
+	#replacement = pattern_one.sub('')
+	replacement = "sanitizeInput(" + line.rstrip('\n') + ");"
+	#replacement_two = "functionName(" + 
+	if (pattern_one.search(line)):
+		q = re.findall(pattern_square_brackets, line)[0]
+		r = re.sub(pattern_square_brackets, 'sanitizeInput(' + q + ')', line.rstrip('\n'))
+		
+		print(r)
+	elif (pattern_e.search(line)):
+		q = re.findall(pattern_two, line)
+		r = re.sub(pattern_e, 'executePreparedStatement', line.rstrip('\n'))
+		print(re.sub(pattern_in_brackets, '("'+ q[0] + '")', r))
+	else:
+		print (line.rstrip('\n'))
 
 
 	
-
-
-f = open('text.txt',"w+");
-t = tempfile.NamedTemporaryFile(mode = "r+")
-
-for line in f:
-	process_and_print(line);
-
-
-t.seek(0)
-for line in t:
-	f.write(line)
-t.close()
-
-
-
-
