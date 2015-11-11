@@ -9,16 +9,13 @@ def check_for_pattern(line):
 for line in fileinput.input("text.txt", inplace = 1):
 	pattern_one = re.compile("\$(get|post|request)\[.*?\]", re.IGNORECASE)
 	pattern_e = re.compile("\w*?(mysqli*_query|\$[^=]*?->query)\w*?", re.IGNORECASE)
-	pattern_square_brackets = re.compile("\$[^=]*?\[.*?\]")
+	pattern_square_brackets = re.compile("\$(GET|POST|REQUEST)\[.*?\]", re.IGNORECASE)
 	pattern_in_brackets = re.compile(r'\((?P<abc>.*?)\)')
 	pattern_two = re.compile(r'\"(?P<abc>.*?)\"')
-	#replacement = pattern_one.sub('')
-	replacement = "sanitizeInput(" + line.rstrip('\n') + ");"
-	#replacement_two = "functionName(" + 
+	
 	if (pattern_one.search(line)):
 		q = re.findall(pattern_square_brackets, line)[0]
 		r = re.sub(pattern_square_brackets, 'sanitizeInput(' + q + ')', line.rstrip('\n'))
-		
 		print(r)
 	elif (pattern_e.search(line)):
 		q = re.findall(pattern_two, line)
