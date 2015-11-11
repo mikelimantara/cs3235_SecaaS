@@ -1,0 +1,39 @@
+import tempfile
+import sys
+import re
+
+
+
+def process_and_print(line):
+	if (check_for_pattern(line)):
+		line = "TESTING" + line
+
+	write_to_temp_file("HAHA" + line)
+
+def check_for_pattern(line):
+	pattern = re.compile("\$(GET|POST|REQUEST)\[.*\]/i")
+	return pattern.match(line)
+
+def write_to_temp_file(line):
+	global t
+	t.write(line.rstrip()+"\n")
+
+
+	
+
+
+f = open('text.txt',"w+");
+t = tempfile.NamedTemporaryFile(mode = "r+")
+
+for line in f:
+	process_and_print(line);
+
+
+t.seek(0)
+for line in t:
+	f.write(line)
+t.close()
+
+
+
+
