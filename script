@@ -7,7 +7,7 @@ def check_for_pattern(line):
 	
 
 for line in fileinput.input("text.txt", inplace = 1):
-	pattern_one = re.compile("\$(get|post|request)\[.*?\]", re.IGNORECASE)
+	pattern_one = re.compile("\$(_get|_post|_request)\[.*?\]", re.IGNORECASE)
 	pattern_e = re.compile("\w*?(mysqli*_query|\$[^=]*?->query)\w*?", re.IGNORECASE)
 	pattern_square_brackets = re.compile("\$(_GET|_POST|_REQUEST)\[.*?\]", re.IGNORECASE)
 	pattern_in_brackets = re.compile(r'\((?P<abc>.*?)\)')
