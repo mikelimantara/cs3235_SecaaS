@@ -1,6 +1,10 @@
 <?php
 
-	require "connect_db.php";
+	$db = new mysqli("localhost", "michael", "michael", "cs3235");
+
+	if ($db->connect_errno) {
+	    exit("Failed to connect to MySQL: (" . $db->connect_errno . ") " . $db->connect_error);
+	}
 
 	// Initialize whitelist configuration filepath
 	$whitelist_config_filename = "config.txt";
@@ -29,7 +33,6 @@
 			while (($line = fgets($config_file)) !== false) {
 				if (strcmp(strtoupper($line), strtoupper($tableName))) {
 					if (($line = fgets($config_file)) !== false) {
-						echo $line;
 						$accepted_sql_commands = explode(" ", strtoupper($line));
 						fclose($config_file);
 						return in_array(strtoupper($command), $accepted_sql_commands);
@@ -46,6 +49,7 @@
 	
 	// Use prepared statement
 	function executePreparedStatement($query) {
+		global $db;
 		$command = determineCommand($query);
 		if ($command === "not found") {
 			return "non-executable query because no command word is found.";
@@ -56,14 +60,13 @@
 			return "non-executable query because no table name is found.";
 		}
 
-		$isAllowed = checkWhiteList($tableName, $command);
-		if (!$isAllowed) {
-			return "non-executable query because no operation is not allowed according to whitelist rule.";
-		}
+		// $isAllowed = checkWhiteList($tableName, $command);
+		// if (!$isAllowed) {
+		// 	return "non-executable query because no operation is not allowed according to whitelist rule.";
+		// }
 
 		if ($command === "SELECT") {
 		    $preparedQuery = modifyQuery($query, "SELECT");
-		    echo $preparedQuery."<br>";
 		    $stmt = $db->prepare($preparedQuery);
 		    $params = prepareParam($query, $command);
 		    for ($i = 1; $i < count($params); $i++) {
@@ -71,7 +74,7 @@
 		    }
 		    $stmt->execute();
 		    $result = $stmt->get_result();
-		    $stmt -> fetch();
+		    // $result = $result->fetch_array();
 		    $stmt -> close();
 		    return $result;
 		} else if($command === "INSERT") {
@@ -86,7 +89,6 @@
 		    $stmt->close();
 		} else if($command === "UPDATE") {
 		    $preparedQuery = modifyQuery($query, "UPDATE");
-		    echo $preparedQuery."<br>";
 		    $stmt = $db->prepare($preparedQuery);
 		    $params = prepareParam($query, $command);
 		    for ($i = 1; $i < count($params); $i++) {
